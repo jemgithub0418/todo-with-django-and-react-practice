@@ -13,7 +13,8 @@ def apiOverview(request):
         'List': 'task-list/',
         'Detail': 'task-detail/',
         'Create': 'task-create/',
-        'Delete': 'task-create/',
+        'Delete': 'task-create/<int:id>/',
+        'Update': 'task-update/<int:id>/',
     }
     return Response(api_urls)
 
