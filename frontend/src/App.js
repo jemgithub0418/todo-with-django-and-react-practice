@@ -3,7 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { IoPencilSharp } from "react-icons/io5";
 import {IoCheckmarkCircleSharp} from "react-icons/io5";
-
+import {IoTrashBinSharp} from 'react-icons/io5';
+import {IoCloseCircleSharp } from 'react-icons/io5';
 
 class App  extends React.Component{
   constructor(props){
@@ -62,6 +63,12 @@ class App  extends React.Component{
     console.log('ITEM:', this.state.activeItem)
 
     var url = "http://localhost:8000/api/task-create/"
+
+    if(this.state.editing == true){
+      url = `http://localhost:8000/api/task-update/${this.state.activeItem.id}/`
+      this.state.editing = false
+    }
+
     var csrftoken = this.getCookie('csrftoken')
 
     fetch(url, {
@@ -89,8 +96,6 @@ class App  extends React.Component{
   handleChange(e){
     var name = e.target.name
     var value = e.target.value
-    console.log(name, value)
-
     this.setState({
       activeItem:{
         ...this.state.activeItem,
@@ -98,6 +103,40 @@ class App  extends React.Component{
       }
     })
   }
+
+
+  handleEdit(task){
+    this.setState({
+      activeItem: task,
+      editing:true,
+    })
+  }
+
+
+  handleDelete(id){
+    var url = `http://localhost:8000/api/task-delete/${id}/`
+
+    var csrftoken = this.getCookie('csrftoken')
+
+    fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken' : csrftoken,
+      },
+    }).then((response) => {
+      this.getTask()
+      this.setState({
+        activeItem: {
+          id: null,
+          title: "",
+          completed: false,
+          batch: null
+        }
+      })
+    })
+  }
+
 
   render(){
     var tasks = this.state.taskList
@@ -129,16 +168,26 @@ class App  extends React.Component{
                             <div style={{flex:7}}>
                               {task.title}
                             </div>
-                            <div style={{flex:2}}>
+                            <div style={{flex:1.5}}>
                               {task.batch}
                             </div>
 
-                            <div style={{flex:1}}>
-                                <button className="btn btn-sm btn-outline-info">Edit</button>
+                            <div style={{flex:0}}>
+                            {task.complete == true ? (
+                              <IoCheckmarkCircleSharp size="27px" color="green" />
+                              ): (
+
+                              <IoCloseCircleSharp size="27px" color="grey" />
+                              )}
+
                             </div>
 
-                            <div style={{flex:1}}>
-                                <button className="btn btn-sm btn-outline-dark delete">-</button>
+                           <div onClick={() => self.handleEdit(task)} style={{flex:0}}>
+                                <IoPencilSharp size="24px" color="cornflowerblue" />
+                            </div>
+
+                            <div onClick={() => self.handleDelete(task.id)} style={{flex:0}}>
+                                <IoTrashBinSharp size="24px" color="red" />
                             </div>
                           </div>
 
