@@ -60,7 +60,6 @@ class App  extends React.Component{
 
   handleSubmit(e){
     e.preventDefault()
-    console.log('ITEM:', this.state.activeItem)
 
     var url = "http://localhost:8000/api/task-create/"
 
@@ -112,6 +111,25 @@ class App  extends React.Component{
     })
   }
 
+  handleStatus(task){
+    var url = `http://localhost:8000/api/task-update/${task.id}/`
+
+    var csrftoken = this.getCookie('csrftoken')
+
+    task.completed = !task.completed
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRFToken' : csrftoken,
+      },
+      body:JSON.stringify({'completed': task.completed, 'title': task.title})
+    }).then(() => {
+      this.getTask()
+    })
+  }
+
 
   handleDelete(id){
     var url = `http://localhost:8000/api/task-delete/${id}/`
@@ -153,7 +171,7 @@ class App  extends React.Component{
                          </div>
 
                          <div style={{flex: 1}}>
-                            <input id="submit" className="btn btn-warning" type="submit" name="Add" />
+                            <input id="submit" className="btn btn-warning" type="submit" value="Add Task"name="Add" />
                           </div>
                       </div>
                 </form>
@@ -165,15 +183,15 @@ class App  extends React.Component{
                     return(
                         <div key={index} className="task-wrapper flex-wrapper">
 
-                            <div style={{flex:7}}>
+                            <div onClick={() => self.handleStatus(task)} style={{flex:7}}>
                               {task.title}
                             </div>
                             <div style={{flex:1.5}}>
                               {task.batch}
                             </div>
 
-                            <div style={{flex:0}}>
-                            {task.complete == true ? (
+                            <div onClick={()=> self.handleStatus(task)} style={{flex:0}}>
+                            {task.completed == true ? (
                               <IoCheckmarkCircleSharp size="27px" color="green" />
                               ): (
 
