@@ -68,7 +68,6 @@ h1, h2, h3, h4, h5, p, span, strike{
 {% block content %}
 
     <div class="container">
-
         <div id="task-container">
             <div id="form-wrapper">
                 <form id="form">
@@ -87,19 +86,31 @@ h1, h2, h3, h4, h5, p, span, strike{
 
             </div>
         </div>
-
     </div>
+
+
+    <div class="container">
+        Tasks from previous day:
+        <div id="batch-wrapper">
+
+        </div>
+    </div>
+
+
+
+
+
 
 
 {% endblock %}
 
 {% block scripts %}
-       <script type="text/javascript">
+    <script type="text/javascript">
         var activeItem = null
         var list_snapshot = []
 
         renderList()
-
+        renderBatch()
 
         function getCookie(name) {
             let cookieValue = null;
@@ -118,6 +129,35 @@ h1, h2, h3, h4, h5, p, span, strike{
         }
         const csrftoken = getCookie('csrftoken');
 
+
+        function renderBatch(){
+            var url = "{% url 'api:sample' %}"
+            var batchWrapper = document.getElementById("batch-wrapper")
+            fetch(url)
+            .then((response) => response.json())
+            .then(function(data){
+                var batchList = data
+                for (var batch in batchList){
+                    var batch = `
+
+                    <divclass="task-wrapper flex-wrapper" id="data-row-${batch}" >
+                        <div style="flex: 7">
+                            ${batchList[batch].batch}
+                        </div>
+                        <div style="flex:0.5; color: Dodgerblue">
+                            <i class="far fa-edit edit"></i>
+                        </div>
+                        <div style="flex:0.5; color:red">
+                            <i class="far fa-trash-alt delete"></i>
+                        </div>
+                    </div>
+
+                    `
+
+                    batchWrapper.innerHTML += batch
+                }
+            })
+        }
 
 
         function renderList(){
@@ -146,6 +186,9 @@ h1, h2, h3, h4, h5, p, span, strike{
                             <div id="data-row-${item}" class="task-wrapper flex-wrapper">
                                 <div class="holder" style="flex:7">
                                     <span class="title">${itemList[item].title}</span>
+                                </div>
+                                <div style="flex: 1.7">
+                                    ${itemList[item].batch}
                                 </div>
                                 <div style="flex: 0.5">
                                   ${checkBox}
@@ -265,6 +308,5 @@ h1, h2, h3, h4, h5, p, span, strike{
                 document.getElementById('form').reset()
             })
         })
-
     </script>
 {% endblock %}

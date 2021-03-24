@@ -6,3 +6,8 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
+
+class BatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['batch',]

@@ -4,8 +4,8 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Task
-from .serializers import TaskSerializer
-
+from .serializers import TaskSerializer, BatchSerializer
+import datetime
 
 @api_view(['GET'])
 def apiOverview(request):
@@ -54,4 +54,11 @@ def taskUpdate(request, id):
     serializer = TaskSerializer(instance=task, data=request.data)
     if serializer.is_valid():
         serializer.save()
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def batchList(request):
+    batches = Task.objects.filter(batch__lt = datetime.date.today()).distinct()
+    serializer = BatchSerializer(batches, many =True)
     return Response(serializer.data)
