@@ -1,76 +1,72 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'base.html' %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+{% block styles %}
 
-    <style type="text/css">
-        <style type="text/css">
-        body{
-          background: rgb(54,217,182);
-          background: linear-gradient(90deg, rgba(54,217,182,1) 0%, rgba(32,152,126,1) 43%, rgba(0,212,255,1) 100%);
-        }
+<style type="text/css">
+body{
+
+}
 
 
-        h1, h2, h3, h4, h5, p, span, strike{
-          font-family: 'Montserrat', sans-serif;
+h1, h2, h3, h4, h5, p, span, strike{
+  font-family: 'Montserrat', sans-serif;
 
-        }
+}
 
 
-        #task-container{
-          max-width:600px;
-          margin:0 auto;
-          box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-          background-color: #fff;
+#task-container{
+  max-width:600px;
+  margin:0 auto;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  background-color: #fff;
 
-          margin-top:100px;
-          margin-bottom:100px;
+  margin-top:100px;
+  margin-bottom:100px;
 
-          justify-content: space-around;
-          align-items: flex-start;
+  justify-content: space-around;
+  align-items: flex-start;
 
-        }
+}
 
-        #form-wrapper{
-          position: -webkit-sticky;
-          position: sticky;
-          top: 0rem;
-          border-bottom: 1px solid  #e9e9e9;
-          background-color: #fff;
-          box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-          padding:40px;
-        }
+#form-wrapper{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0rem;
+  border-bottom: 1px solid  #e9e9e9;
+  background-color: #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  padding:40px;
+}
 
-        #submit{
-          background-color: #36d9b6;
-          border-radius: 0;
-          border:0;
-          color: #fff;
-        }
+#submit{
+  background-color: #36d9b6;
+  border-radius: 0;
+  border:0;
+  color: #fff;
+}
 
-        .flex-wrapper{
-            display: flex;
-        }
+.flex-wrapper{
+    display: flex;
+}
 
-        .task-wrapper{
-            margin:5px;
-            padding: 5px;
-            padding:20px;
-            cursor: pointer;
-            border-bottom: 1px solid  #e9e9e9;
-            color: #686868;
-            }
+.task-wrapper{
+    margin:5px;
+    padding: 5px;
+    padding:20px;
+    cursor: pointer;
+    border-bottom: 1px solid  #e9e9e9;
+    color: #686868;
+    }
 
-    </style>
-    </style>
-    <title>Hello, world!</title>
-  </head>
-  <body>
+</style>
+
+{% endblock %}
+
+
+
+
+{% block content %}
+
     <div class="container">
 
         <div id="task-container">
@@ -95,17 +91,10 @@
     </div>
 
 
-    <!-- Optional JavaScript; choose one of the two! -->
+{% endblock %}
 
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
-
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js" integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
-    -->
-    <script type="text/javascript">
+{% block scripts %}
+       <script type="text/javascript">
         var activeItem = null
         var list_snapshot = []
 
@@ -132,12 +121,12 @@
 
 
         function renderList(){
+            document.getElementById('form').reset()
             var listWrapper = document.getElementById("list-wrapper")
             var url = "{% url 'api:task-list' %}"
             fetch(url)
             .then((resp) => resp.json())
             .then(function(data){
-                console.log('Data: ', data)
                 var itemList = data
                 for (var item in itemList){
 
@@ -147,9 +136,9 @@
 
                     }
 
-                    var checkBox = `<input class="form-check-input statuscheckbox" type="checkbox" checked >`
+                    var checkBox = `<span style="color: Green"><i class="fas fa-check-circle statuscheckbox"></i></span>`
                     if(itemList[item].completed == false){
-                        checkBox = `<input class="form-check-input statuscheckbox" type="checkbox" >`
+                        checkBox = `<span style="color: Black"><i class="fas fa-times-circle statuscheckbox"></i></span>`
                     }
 
                     var task = `
@@ -158,14 +147,14 @@
                                 <div class="holder" style="flex:7">
                                     <span class="title">${itemList[item].title}</span>
                                 </div>
-                                <div style="flex: 0">
+                                <div style="flex: 0.5">
                                   ${checkBox}
                                 </div>
-                                <div style="flex:1">
-                                    <button class="btn btn-sm btn-outline-info edit">Edit </button>
+                                <div style="flex:0.5; color: Dodgerblue">
+                                    <i class="far fa-edit edit"></i>
                                 </div>
-                                <div style="flex:1">
-                                    <button class="btn btn-sm btn-outline-dark delete">-</button>
+                                <div style="flex:0.5; color:red">
+                                    <i class="far fa-trash-alt delete"></i>
                                 </div>
                             </div>
                     `
@@ -231,6 +220,8 @@
                 }
             }).then((response) => {
                     renderList()
+                    document.getElementById('form').reset()
+
             })
         }
 
@@ -276,5 +267,4 @@
         })
 
     </script>
-  </body>
-</html>
+{% endblock %}
