@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Task
+from .models import Task, Batch
 from .serializers import TaskSerializer, BatchSerializer
 import datetime
 
@@ -21,7 +21,8 @@ def apiOverview(request):
 
 @api_view(['GET'])
 def taskList(request):
-    tasks = Task.objects.all().order_by('-id')
+    batch_today = Batch.objects.get(batch = datetime.date.today())
+    tasks = Task.objects.filter(user = request.user, batch_id = batch_today.id).order_by('-id')
     serializer = TaskSerializer(tasks, many =True)
     return Response(serializer.data)
 
@@ -35,9 +36,12 @@ def taskDetail(request, id):
 
 @api_view(['POST'])
 def taskCreate(request):
+    check_batch = Batch.objects.filter(batch = datetime.date.today()).first()
+    if check_batch is None:
+        check_batch = Batch.objects.create(batch = datetime.date.today())
     serializer = TaskSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        serializer.save(batch = check_batch, user = request.user)
     return Response(serializer.data)
 
 
@@ -59,6 +63,6 @@ def taskUpdate(request, id):
 
 @api_view(['GET'])
 def batchList(request):
-    batches = Task.objects.filter(batch__lt = datetime.date.today())
-    serializer = BatchSerializer(batches, many =True)
+    batchlist = Batch.objects.filter(batch__lt = datetime.date.today())
+    serializer = BatchSerializer(batchlist, many =True)
     return Response(serializer.data)

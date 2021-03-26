@@ -88,8 +88,15 @@ h1, h2, h3, h4, h5, p, span, strike{
         </div>
     </div>
 
+    <div class="container" style="max-width:600px;">
+        <ul class="list-group">
+            <li class="list-group-item">
+asd
 
-    <div class="container">
+            </li>
+        </ul>
+    </div>
+<!--     <div class="container">
         Tasks from previous day:
         <div id="batch-wrapper">
 
@@ -97,7 +104,7 @@ h1, h2, h3, h4, h5, p, span, strike{
     </div>
 
 
-
+ -->
 
 
 
@@ -110,7 +117,7 @@ h1, h2, h3, h4, h5, p, span, strike{
         var list_snapshot = []
 
         renderList()
-        renderBatch()
+        // renderBatch()
 
         function getCookie(name) {
             let cookieValue = null;
@@ -130,34 +137,7 @@ h1, h2, h3, h4, h5, p, span, strike{
         const csrftoken = getCookie('csrftoken');
 
 
-        function renderBatch(){
-            var url = "{% url 'api:sample' %}"
-            var batchWrapper = document.getElementById("batch-wrapper")
-            fetch(url)
-            .then((response) => response.json())
-            .then(function(data){
-                var batchList = data
-                for (var batch in batchList){
-                    var batch = `
 
-                    <divclass="task-wrapper flex-wrapper" id="data-row-${batch}" >
-                        <div style="flex: 7">
-                            ${batchList[batch].batch}
-                        </div>
-                        <div style="flex:0.5; color: Dodgerblue">
-                            <i class="far fa-edit edit"></i>
-                        </div>
-                        <div style="flex:0.5; color:red">
-                            <i class="far fa-trash-alt delete"></i>
-                        </div>
-                    </div>
-
-                    `
-
-                    batchWrapper.innerHTML += batch
-                }
-            })
-        }
 
 
         function renderList(){
@@ -188,7 +168,7 @@ h1, h2, h3, h4, h5, p, span, strike{
                                     <span class="title">${itemList[item].title}</span>
                                 </div>
                                 <div style="flex: 1.7">
-                                    ${itemList[item].batch}
+                                    ${itemList[item].batch.batch}
                                 </div>
                                 <div style="flex: 0.5">
                                   ${checkBox}
@@ -285,28 +265,62 @@ h1, h2, h3, h4, h5, p, span, strike{
         }
 
 
+        try{
+            var form = document.getElementById("form")
+            form.addEventListener('submit', function(e){
+                e.preventDefault()
+                var url = "{% url 'api:task-create' %}"
+                if(activeItem != null ){
+                    url = `http://localhost:8000/api/task-update/${activeItem.id}/`
+                    activeItem = null
+                }
+                var title = document.getElementById('title').value
+                fetch(url, {
 
-        var form = document.getElementById("form")
-        form.addEventListener('submit', function(e){
-            e.preventDefault()
-            var url = "{% url 'api:task-create' %}"
-            if(activeItem != null ){
-                url = `http://localhost:8000/api/task-update/${activeItem.id}/`
-                activeItem = null
-            }
-            var title = document.getElementById('title').value
-            fetch(url, {
-
-                method: 'POST',
-                headers:{
-                    'Content-type': 'application/json',
-                    'X-CSRFToken': csrftoken,
-                },
-                body: JSON.stringify({'title':title})
-            }).then(function(response){
-                renderList()
-                document.getElementById('form').reset()
+                    method: 'POST',
+                    headers:{
+                        'Content-type': 'application/json',
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: JSON.stringify({'title':title})
+                }).then(function(response){
+                    renderList()
+                    document.getElementById('form').reset()
+                })
             })
-        })
+        }catch(err){
+            console.log(err);
+        }
+
     </script>
 {% endblock %}
+<!--
+
+        // function renderBatch(){
+        //     var url = "{% url 'api:sample' %}"
+        //     var batchWrapper = document.getElementById("batch-wrapper")
+        //     fetch(url)
+        //     .then((response) => response.json())
+        //     .then(function(data){
+        //         var batchList = data
+        //         for (var batch in batchList){
+        //             var batch = `
+
+        //             <divclass="task-wrapper flex-wrapper" id="data-row-${batch}" >
+        //                 <div style="flex: 7">
+        //                     ${batchList[batch].batch}
+        //                 </div>
+        //                 <div style="flex:0.5; color: Dodgerblue">
+        //                     <i class="far fa-edit edit"></i>
+        //                 </div>
+        //                 <div style="flex:0.5; color:red">
+        //                     <i class="far fa-trash-alt delete"></i>
+        //                 </div>
+        //             </div>
+
+        //             `
+
+        //             batchWrapper.innerHTML += batch
+        //         }
+        //     })
+        // } -->
