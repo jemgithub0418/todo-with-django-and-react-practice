@@ -61,8 +61,8 @@ def taskUpdate(request, id):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def batchList(request):
-    batchlist = Batch.objects.filter(batch__lt = datetime.date.today())
-    serializer = BatchSerializer(batchlist, many =True)
-    return Response(serializer.data)
+# @api_view(['GET'])
+# def batchList(request):
+#     batchlist = Batch.objects.filter(batch__lt = datetime.date.today())
+#     serializer = BatchSerializer(batchlist, many =True)
+#     return Response(serializer.data)
