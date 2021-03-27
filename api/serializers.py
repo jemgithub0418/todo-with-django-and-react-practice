@@ -5,7 +5,7 @@ from .models import Task
 class BatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['batch',]
+        fields = ['batch','id']
 
 
 class TaskSerializer(serializers.ModelSerializer):

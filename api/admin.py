@@ -3,6 +3,7 @@ from .models import Task, Batch
 import datetime
 
 class TaskAdmin(admin.ModelAdmin):
+    #'author' = author functio() below
     list_display = ['title', 'batch', 'completed', 'author',]
     list_display_links = ['title', 'batch', 'completed', 'author',]
 

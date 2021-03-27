@@ -88,24 +88,34 @@ h1, h2, h3, h4, h5, p, span, strike{
         </div>
     </div>
 
-    <div class="container" style="max-width:600px;">
-        <ul class="list-group">
-            <li class="list-group-item">
-asd
 
-            </li>
+    <div class="container" style="max-width:600px;">
+        Tasks from the last 7 days:
+        <ul class="list-group" id="batch-wrapper">
+
         </ul>
     </div>
-<!--     <div class="container">
-        Tasks from previous day:
-        <div id="batch-wrapper">
 
+
+
+    <!-- Modal -->
+    <div class="container" id="batchModal">
+        <div class="modal fade" id="exampleModal" style="margin-top: 200px; max-height: 600px;" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="batchTitle"></h5>
+              </div>
+              <div class="modal-body" id="body">
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="closeButton" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
         </div>
     </div>
-
-
- -->
-
 
 
 
@@ -113,11 +123,13 @@ asd
 
 {% block scripts %}
     <script type="text/javascript">
+
+
         var activeItem = null
         var list_snapshot = []
 
         renderList()
-        // renderBatch()
+        renderBatch()
 
         function getCookie(name) {
             let cookieValue = null;
@@ -136,8 +148,112 @@ asd
         }
         const csrftoken = getCookie('csrftoken');
 
+        function renderBatch(){
+            var batchGroup = document.getElementById('batch-wrapper')
+            var url = "{% url 'api:batch-list' %}"
+
+            fetch(url)
+            .then((response) => response.json())
+            .then(function(data){
+                var batchList = data
+
+                for (var index in batchList){
 
 
+                // di ko alam kung para san to
+                try{
+                    document.getElementById(`batch-row-${index}`).remove()
+                }catch(err){
+
+                }
+
+                    var batch = `
+
+                        <li class="list-group-item" style="display:flex; cursor:pointer;" id="batch-row-${index}">
+                            <div style="flex: 5">
+                                ${batchList[index].batch}
+                            </div>
+
+                            <div style="flex: 0.5">
+                                <i class="fas fa-expand view" data-bs-toggle="modal" data-bs-target="#exampleModal"></i>
+                            </div>
+
+
+                        </li>
+
+                    `
+                    batchGroup.innerHTML += batch
+
+                }
+
+                for (var batch in batchList){
+
+                    var viewButton = document.getElementsByClassName("view")[batch]
+
+                    viewButton.addEventListener("click", (function(batch){
+                        return function(){
+                            viewBatch(batch)
+                        }
+                    })(batchList[batch]))
+                }
+            })
+        }
+
+        function viewBatch(batch){
+
+            var myModal = document.getElementById('batchModal')
+            var title = document.getElementById('batchTitle')
+            var body = document.getElementById('body')
+            var xBtn = document.getElementById("xButton")
+            var closeBtn = document.getElementById("closeButton")
+
+            console.log(batch)
+
+            var url = `http://localhost:8000/api/task-batch/${batch.id}/`
+
+            fetch(url)
+            .then((response) => response.json())
+            .then(function(data){
+                body.innerHTML = ""
+                taskperbatchlist = data
+                myModal.addEventListener('shown.bs.modal', function () {
+                title.innerHTML = `Tasks from ${batch.batch}`
+                    if (taskperbatchlist.length == 0){
+                        body.innerHTML = `<small class="text-muted">No task created for this day.</span>`
+                    }
+                    for (var task in taskperbatchlist){
+                        // para di dumodoble ung content pag nirerender ung get request
+                        try{
+                            document.getElementById(`taskbatch-row-${task}`).remove()
+                        }catch(err){
+
+                        }
+                        var checkBox = `<span style="color: Green"><i class="fas fa-check-circle statuscheckbox"></i></span>`
+                        if(taskperbatchlist[task].completed == false){
+                            checkBox = `<span style="color: Black"><i class="fas fa-times-circle statuscheckbox"></i></span>`
+                        }
+
+
+                        var item = `
+
+                            <li style="display:flex; cursor:pointer;" id="taskbatch-row-${task}">
+                                <div style="flex: 5">
+                                    ${taskperbatchlist[task].title}
+                                </div>
+                                <div style="flex: 0.5">
+                                 ${checkBox}
+                                </div>
+                            </li>
+                        `
+                    body.innerHTML += item
+                    }
+                })
+            })
+
+
+
+
+        }
 
 
         function renderList(){
@@ -149,7 +265,7 @@ asd
             .then(function(data){
                 var itemList = data
                 for (var item in itemList){
-
+                    // para di dumodoble ung content pag nirerender ung get request
                     try{
                         document.getElementById(`data-row-${item}`).remove()
                     }catch(err){
